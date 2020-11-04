@@ -1,0 +1,31 @@
+img{
+    max-width: 100%;
+}
+.img-poster {
+    height: 360px;
+}
+.item {
+    margin: 15px 0;
+    text-align: center;
+    font-weight: 700;
+}
+.spinner {
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 10px solid #aaa;
+    border-right-color: #555;
+    border-bottom-color: #000;
+    border-left-color: transparent;
+    animation: spin 500ms infinite linear;
+}
+@keyframes spin{
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.youtube {
+    margin-bottom: 30px;
+}

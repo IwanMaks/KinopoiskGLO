@@ -58,6 +58,35 @@ const addEventMedia = function() {
     });
 }
 
+const getVideo = function(type, id) {
+    let youtube = movie.querySelector('.youtube');
+
+    fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=c3991bfbbb2efbee7ac90c72b9afa233&language=ru`)
+        .then(resultOne => {
+            if(resultOne.status !== 200) {
+                return Promise.reject(resultOne);
+            }
+            return resultOne.json();
+        })
+        .then(resultTwo => {
+            let videoFrame = '<h5 class="col-12 text-info"> Видео </h5>';
+            if (resultTwo.results.length === 0) {
+                videoFrame = '<p> К сожалению видео отсутствуют </p>';
+                youtube.innerHTML = videoFrame;
+                return ;
+            }
+            // resultTwo.results.forEach(item => {
+            //     videoFrame += `<iframe width="560" height="315" src="https://www.youtube.com/embed/${item.key}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+            // });
+            videoFrame += `<iframe width="560" height="315" src="https://www.youtube.com/embed/${resultTwo.results[0].key}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+            youtube.innerHTML = videoFrame;
+        })
+        .catch(error => {
+            youtube.innerHTML = 'Видео не найдено';
+            console.log('Ошибка: ' + error.status);
+        });
+}
+
 const show = function() {
     let url = '';
     if (this.dataset.type === 'movie') {
@@ -82,6 +111,8 @@ const show = function() {
                 <h4 class="col-12 text-center text-info">${resultTwo.name || resultTwo.title}</h4>
                 <div class="col-4">
                     <img src="${ poster }"/>
+                    ${resultTwo.homepage ? `<p> <a href="${resultTwo.homepage}" target="_blank"> Официальная страница </a> </p>` : ''}
+                    ${resultTwo.imdb_id ? `<p> <a href="https://imdb.com/title/${resultTwo.imdb_id}" target="_blank"> Страница на IMDB </a> </p>` : ''}
                 </div>
                 <div class="col-8">
                     <p > Рейтинг: ${resultTwo.vote_average}</p>
@@ -90,10 +121,12 @@ const show = function() {
                     
                     ${resultTwo.last_episode_to_air ? `<p>${resultTwo.number_of_seasons} сезон ${resultTwo.last_episode_to_air.episode_number} серий</p>` : '' }
                     <p> Описание: ${resultTwo.overview}</p>
-                    ${resultTwo.homepage ? `<p> <a href="${resultTwo.homepage}" target="_blank"> Официальная страница </a> </p>` : ''}
-                    ${resultTwo.imdb_id ? `<p> <a href="https://imdb.com/title/${resultTwo.imdb_id}" target="_blank"> Страница на IMDB </a> </p>` : ''}
+                    
+                    <br/>
+                    <div class="youtube"></div>
                 </div>
             `;
+            getVideo(this.dataset.type, this.dataset.id);
         })
         .catch(error => {
             movie.innerHTML = 'Упс, что-то пошло не так';
